@@ -1,6 +1,29 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Venue
+from .models import Venue, Event
+
+
+class EventForm(ModelForm):
+    class Meta:
+        model = Event
+        # fields = "__all__"
+        fields = ('name', 'event_date', 'venue', 'manager', 'attendees', 'description')
+        labels = {
+            'name': '',
+            'event_date': 'YYYY-MM-DD HH:MM',
+            'venue': 'Venue',
+            'manager': 'Manager',
+            'description': '',
+            'attendees': 'Attendees',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Name'}),
+            'event_date': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Date'}),
+            'venue': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Venue'}),
+            'manager': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Manager'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
+            'attendees': forms.SelectMultiple(attrs={'class': 'form-control', 'placeholder': 'Attendees'}),
+        }
 
 
 class VenueForm(ModelForm):

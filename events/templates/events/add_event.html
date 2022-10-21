@@ -1,9 +1,9 @@
 {% extends 'events/base.html' %}
 
     {% block content %}
-        <h1>Add Venue</h1><br/><br/>
+        <h1>Add Event</h1><br/><br/>
         {% if submitted %}
-        <p>Your Venue Was Submitted Successfully!</p>
+        <p>Your Event Was Submitted Successfully!</p>
         {% else %}
         <form action="" method=POST>
         {% csrf_token %}
