@@ -5,6 +5,28 @@ from datetime import datetime
 from django.http import HttpResponseRedirect
 from .models import Event, Venue
 from .forms import VenueForm, EventForm
+from django.http import HttpResponse
+
+
+def venue_text(request):
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=venues.txt'
+
+    #Designate The Model
+    venues = Venue.objects.all()
+
+    #Loop Through and Output
+    lines = []
+    for venue in venues:
+        lines.append(f'{venue.name}\n'
+                     f'{venue.address}\n'
+                     f'{venue.zip_code}\n'
+                     f'{venue.phone}\n'
+                     f'{venue.web}\n'
+                     f'{venue.email_address}\n\n\n')
+
+    response.writelines(lines)
+    return response
 
 
 def delete_venue(request, venue_id):
@@ -66,7 +88,7 @@ def show_venue(request, venue_id):
 
 
 def list_venues(request):
-    venue_list = Venue.objects.all()
+    venue_list = Venue.objects.all().order_by('name')
     return render(request, 'events/venue_list.html', {'venue_list': venue_list})
 
 
@@ -85,7 +107,7 @@ def add_venue(request):
 
 
 def all_events(request):
-    event_list = Event.objects.all()
+    event_list = Event.objects.all().order_by('event_date')
     return render(request, 'events/event_list.html', {'event_list': event_list})
 
 
