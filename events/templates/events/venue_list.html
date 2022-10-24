@@ -3,7 +3,7 @@
     {% block content %}
         <h1>Venues</h1><br/>
         <table class="table table-hover table-striped table-bordered">
-            {% for venue in venue_list %}
+            {% for venue in venues %}
             <tr>
                 <td>
                     <a href="{% url 'show_venue' venue.id %}">{{ venue }} </a>
@@ -14,6 +14,20 @@
                 </td>
             </tr>
             {% endfor %}
-        </table>
+        </table><br/><br/>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if venues.has_previous %}
+                <li class="page-item"><a href="?page=1" class="page-link">&laquo First</a></li>
+                <li class="page-item"><a href="?page={{ venues.previous_page_number }}" class="page-link">Previous</a></li>
+                {% endif %}
+                {% for i in nums %}
+                <li class="page-item"><a href="?page={{ forloop.counter }}" class="page-link"> {{ forloop.counter }} </a></li>
+                {% endfor %}
+                {% if venues.has_next %}
+                <li class="page-item"><a href="?page={{ venues.next_page_number }}" class="page-link">Next</a></li>
+                <li class="page-item"><a href="?page={{ venues.paginator.num_pages }}" class="page-link">Last &raquo</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     {% endblock %}
-

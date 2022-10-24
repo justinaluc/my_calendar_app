@@ -6,16 +6,59 @@ from django.http import HttpResponseRedirect
 from .models import Event, Venue
 from .forms import VenueForm, EventForm
 from django.http import HttpResponse
+import csv
+
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+
+from django.core.paginator import Paginator
+
+
+def venue_pdf(request):
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    textob = c.beginText()
+    textob.setTextOrigin(inch, inch)
+    textob.setFont("Helvetica", 14)
+    venues = Venue.objects.all()
+    lines = []
+
+    for venue in venues:
+        lines.append(venue.name)
+        lines.append(venue.address)
+        lines.append(venue.zip_code)
+        lines.append(venue.phone)
+        lines.append(venue.web)
+        lines.append(venue.email_address)
+        lines.append(".........................................")
+
+    for line in lines:
+        textob.textLine(line)
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+    return FileResponse(buf, as_attachment=True, filename='venues.pdf')
+
+
+def venue_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=venues.csv'
+    writer = csv.writer(response)
+    venues = Venue.objects.all()
+    writer.writerow(['Venue Name', 'Address', 'Zip Code', 'Phone', 'Web', 'Email Address'])
+    for venue in venues:
+        writer.writerow([venue.name, venue.address, venue.zip_code, venue.phone, venue.web, venue.email_address])
+    return response
 
 
 def venue_text(request):
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename=venues.txt'
-
-    #Designate The Model
     venues = Venue.objects.all()
-
-    #Loop Through and Output
     lines = []
     for venue in venues:
         lines.append(f'{venue.name}\n'
@@ -24,7 +67,6 @@ def venue_text(request):
                      f'{venue.phone}\n'
                      f'{venue.web}\n'
                      f'{venue.email_address}\n\n\n')
-
     response.writelines(lines)
     return response
 
@@ -89,7 +131,11 @@ def show_venue(request, venue_id):
 
 def list_venues(request):
     venue_list = Venue.objects.all().order_by('name')
-    return render(request, 'events/venue_list.html', {'venue_list': venue_list})
+    p = Paginator(Venue.objects.all(), 2)
+    page = request.GET.get('page')
+    venues = p.get_page(page)
+    nums = "a" * venues.paginator.num_pages
+    return render(request, 'events/venue_list.html', {'venue_list': venue_list, 'venues': venues, 'nums': nums})
 
 
 def add_venue(request):
