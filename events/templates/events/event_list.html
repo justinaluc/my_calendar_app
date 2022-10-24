@@ -6,12 +6,12 @@
 
         {% for event in event_list %}
         <div class="card">
-          <div class="card-header">
-            {{ event }}
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">{{ event.venue }}</h5>
-            <p class="card-text">
+            <div class="card-header">
+                {{ event }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ event.venue }}</h5>
+                <p class="card-text">
                 <ul>
                     <li>Date: {{ event.event_date }}</li>
                     <li>Venue website: {{ event.venue.web }}</li>
@@ -19,13 +19,19 @@
                     <li>Manager: {{ event.manager }}</li>
                     <li>Description: {{ event.description }}</li>
                     <li>Attendees:<br/>
-                    {% for user in event.attendees.all %}
-                    {{ user }} <br/>
-                    {% endfor %}
+                        {% for user in event.attendees.all%}
+                            {{ user }} <br/>
+                        {% empty %}
+                            <p>no attendees registered yet!</p>
+                        {% endfor %}
                     </li>
                 </ul>
-            </p>
-          </div>
+                </p>
+            </div>
+            <div class="card-footer text-muted">
+                <a href="{% url 'update_event' event.id %}" class="btn btn-outline-secondary btn-sm" >Update Event</a>
+                <a href="{% url 'delete_event' event.id %}" class="btn btn-outline-danger btn-sm" >Delete Event</a>
+            </div>
         </div><br/><br/>
         {% endfor %}
 
