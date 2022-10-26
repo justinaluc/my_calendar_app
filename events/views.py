@@ -4,7 +4,7 @@ from calendar import HTMLCalendar
 from datetime import datetime
 from django.http import HttpResponseRedirect
 from .models import Event, Venue
-from .forms import VenueForm, EventForm
+from .forms import VenueForm, EventForm, EventFormAdmin
 from django.http import HttpResponse
 import csv
 
@@ -15,6 +15,8 @@ from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 
 from django.core.paginator import Paginator
+
+from django.contrib import messages
 
 
 def venue_pdf(request):
@@ -79,13 +81,20 @@ def delete_venue(request, venue_id):
 
 def delete_event(request, event_id):
     event = Event.objects.get(pk=event_id)
-    event.delete()
+    if request.user == event.manager:
+        event.delete()
+        messages.success(request, "Event Deleted!")
+    else:
+        messages.success(request, "You are not authorized to delete this event!")
     return redirect('list_events')
 
 
 def update_event(request, event_id):
     event = Event.objects.get(pk=event_id)
-    form = EventForm(request.POST or None, instance=event)
+    if request.user.is_superuser:
+        form = EventFormAdmin(request.POST or None, instance=event)
+    else:
+        form = EventForm(request.POST or None, instance=event)
     if form.is_valid():
         form.save()
         return redirect('list_events')
@@ -95,12 +104,23 @@ def update_event(request, event_id):
 def add_event(request):
     submitted = False
     if request.method == "POST":
-        form = EventForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/add_event?submitted==True')
+        if request.user.is_superuser:
+            form = EventFormAdmin(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/add_event?submitted==True')
+        else:
+            form = EventForm(request.POST)
+            if form.is_valid():
+                event = form.save(commit=False)
+                event.manager = request.user  # logged in user
+                event.save()
+                return HttpResponseRedirect('/add_event?submitted==True')
     else:
-        form = EventForm
+        if request.user.is_superuser:
+            form = EventFormAdmin
+        else:
+            form = EventForm
         if 'submitted' in request.GET:
             submitted = True
     return render(request, 'events/add_event.html', {'form': form, 'submitted': submitted})
@@ -143,7 +163,10 @@ def add_venue(request):
     if request.method == "POST":
         form = VenueForm(request.POST)
         if form.is_valid():
-            form.save()
+            venue = form.save(commit=False)
+            venue.owner = request.user.id #logged in user
+            venue.save()
+            # form.save() # save form before adding venue owner
             return HttpResponseRedirect('/add_venue?submitted==True')
     else:
         form = VenueForm
