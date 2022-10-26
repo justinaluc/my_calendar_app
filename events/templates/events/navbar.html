@@ -14,16 +14,20 @@
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{% url 'list_events' %}">All Events</a></li>
+            {% if user.is_authenticated %}
             <li><a class="dropdown-item" href="{% url 'add_event' %}">Add Event</a></li>
+            {% endif %}
           </ul>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Events
+            Venues
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{% url 'list_venues' %}">All Venues</a></li>
+            {% if user.is_authenticated %}
             <li><a class="dropdown-item" href="{% url 'add_venue' %}">Add Venue</a></li>
+            {% endif %}
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -44,6 +48,9 @@
         {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register_user' %}">Register</a>
           </li>
         {% endif %}
       </ul>
