@@ -2,6 +2,7 @@
 
     {% block content %}
     {% if user.is_authenticated %}
+        {% if user == event.manager %}
         <h1>Update Event</h1><br/>
         <form action="" method="POST">
             {% csrf_token %}
@@ -9,6 +10,10 @@
             <br/>
             <input type="submit" value="Update" class="btn btn-secondary">
         </form>
+        {% else %}
+        <h1>Access Denied</h1>
+        <p>only the event's Manager can update this event</p>
+        {% endif %}
     {% else %}
          <h1>Sorry! You Must Be Logged In To View This Page...</h1><br/><br/>
             <a href="{% url 'login' %}">Login Here!</a>
