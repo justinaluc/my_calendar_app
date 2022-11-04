@@ -13,6 +13,12 @@
             {{ venue.phone }}<br/>
             {{ venue.email_address }}<br/>
             <a href="{{ venue.web }}">{{ venue.web }}</a><br/>
+            {% if venue_owner.first_name %}
+                Owner: {{ venue_owner.first_name }} {{ venue_owner.last_name }}<br/>
+            {% else %}
+                Owner: {{ venue_owner }} <br/>
+            {% endif %}
+            Owner's email: {{ venue_owner.email }}<br/>
         </p>
       </div>
     </div><br/><br/>

@@ -4,6 +4,7 @@ from calendar import HTMLCalendar
 from datetime import datetime
 from django.http import HttpResponseRedirect
 from .models import Event, Venue
+from django.contrib.auth.models import User
 from .forms import VenueForm, EventForm, EventFormAdmin
 from django.http import HttpResponse
 import csv
@@ -17,6 +18,15 @@ from reportlab.lib.pagesizes import letter
 from django.core.paginator import Paginator
 
 from django.contrib import messages
+
+
+def my_events(request):
+    if request.user.is_authenticated:
+        events = Event.objects.filter(attendees=request.user.id)
+        return render(request, 'events/my_events.html', {'events': events})
+    else:
+        messages.success(request, "You are not authorized to view this page!")
+    return redirect('home')
 
 
 def venue_pdf(request):
@@ -146,12 +156,13 @@ def update_venue(request, venue_id):
 
 def show_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
-    return render(request, 'events/show_venue.html', {'venue': venue})
+    venue_owner = User.objects.get(pk=venue.owner)
+    return render(request, 'events/show_venue.html', {'venue': venue, 'venue_owner': venue_owner})
 
 
 def list_venues(request):
     venue_list = Venue.objects.all().order_by('name')
-    p = Paginator(Venue.objects.all(), 2)
+    p = Paginator(Venue.objects.all(), 4)
     page = request.GET.get('page')
     venues = p.get_page(page)
     nums = "a" * venues.paginator.num_pages
