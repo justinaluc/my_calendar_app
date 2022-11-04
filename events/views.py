@@ -145,6 +145,15 @@ def search_venues(request):
         return render(request, 'events/search_venues.html', {})
 
 
+def search_events(request):
+    if request.method == "POST":
+        searched = request.POST['searched']
+        events = Event.objects.filter(name__contains=searched)
+        return render(request, 'events/search_events.html', {'searched': searched, 'events': events})
+    else:
+        return render(request, 'events/search_events.html', {})
+
+
 def update_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
     form = VenueForm(request.POST or None, instance=venue)
