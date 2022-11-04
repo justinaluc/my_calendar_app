@@ -3,9 +3,28 @@
     {% block content %}
     <center>
         <h1>Hello, {{ name }}!</h1><br/>
-        <h2> Events for {{ month }} {{ year }} </h2>
         <p> {{ time }} </p><br/>
         <p> {{ cal|safe }} </p>
+    </center>
+    <br/><br/>
+    <h2> Events for {{ month }} {{ year }} </h2>
+        {% if event_list %}
+            {% for event in event_list %}
+                <div class="card">
+                    <div class="card-header">
+                        {{ event }} - {{ event.event_date }}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'list_events' %}">{{ event.venue }}</a></h5>
+                    </div>
+                </div>
+            <br/>
+            {% endfor %}
+        {% else %}
+            Sorry, there are no events this month.
+        {% endif %}
+        <br/><br/>
+    <center>
         <p>Copyright (c) {{ current_year }}</p>
     </center>
     {% endblock %}

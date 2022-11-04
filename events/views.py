@@ -184,7 +184,7 @@ def add_venue(request):
         form = VenueForm(request.POST)
         if form.is_valid():
             venue = form.save(commit=False)
-            venue.owner = request.user.id #logged in user
+            venue.owner = request.user.id  # logged in user
             venue.save()
             # form.save() # save form before adding venue owner
             return HttpResponseRedirect('/add_venue?submitted==True')
@@ -202,25 +202,31 @@ def all_events(request):
 
 def home(request, year=datetime.now().year, month=datetime.now().strftime('%B')):
     name = "Justyna"
-    month = month.capitalize()
-    #convert month from name to number
+    month_name = month.capitalize()
+    # convert month from name to number
     month_number = list(calendar.month_name).index(month)
     month_number = int(month_number)
-    #create calendar
+    # create calendar
     cal = HTMLCalendar().formatmonth(year, month_number)
-    #get datetime
+    # get datetime
     now = datetime.now()
     current_year = now.year
-    #get current time
+    # get current time
     time = now.strftime('%I:%M %p')
+    # Query the Events Model For Dates
+    event_list = Event.objects.filter(
+        event_date__year=year,
+        event_date__month=month_number
+    )
 
     return render(request, 'events/home.html', {
         "name": name,
         "year": year,
-        "month": month,
+        "month": month_name,
         "month_number": month_number,
         "cal": cal,
         "current_year": current_year,
         "time": time,
+        "event_list": event_list,
     })
 
