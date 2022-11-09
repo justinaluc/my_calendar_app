@@ -10,10 +10,12 @@
                 {{ event }}
             </div>
             <div class="card-body">
-                <h5 class="card-title">{{ event.venue }}</h5>
+                <h5 class="card-title">Venue: {{ event.venue }}</h5>
                 <p class="card-text">
                 <ul>
                     <li>Date: {{ event.event_date }}</li>
+                    <li>Days till event: {{ event.days_till }}</li>
+                    <li>Occured: {{ event.is_past }}</li>
                     <li>Venue website: {{ event.venue.web }}</li>
                     <li>Venue email: {{ event.venue.email_address }}</li>
                     <li>Manager: {{ event.manager }}</li>

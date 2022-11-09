@@ -196,12 +196,12 @@ def add_venue(request):
 
 
 def all_events(request):
-    event_list = Event.objects.all().order_by('event_date')
+    event_list = Event.objects.all().order_by('-event_date')
     return render(request, 'events/event_list.html', {'event_list': event_list})
 
 
 def home(request, year=datetime.now().year, month=datetime.now().strftime('%B')):
-    name = "Justyna"
+    name = "there!"
     month_name = month.capitalize()
     # convert month from name to number
     month_number = list(calendar.month_name).index(month)
