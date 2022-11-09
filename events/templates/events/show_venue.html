@@ -19,6 +19,9 @@
                 Owner: {{ venue_owner }} <br/>
             {% endif %}
             Owner's email: {{ venue_owner.email }}<br/>
+            {% if venue.venue_image %}
+                <img src="{{ venue.venue_image.url }}" width="500">
+            {% endif %}
         </p>
       </div>
     </div><br/><br/>
