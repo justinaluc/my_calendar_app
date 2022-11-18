@@ -5,40 +5,43 @@
         <h1>Events</h1><br/>
 
         {% for event in event_list %}
-        <div class="card">
-            <div class="card-header">
-                {{ event }}
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">Venue: {{ event.venue }}</h5>
-                <p class="card-text">
-                <ul>
-                    <li>Date: {{ event.event_date }}</li>
-                    <li>Days till event: {{ event.days_till }}</li>
-                    <li>Occured: {{ event.is_past }}</li>
-                    <li>Venue website: {{ event.venue.web }}</li>
-                    <li>Venue email: {{ event.venue.email_address }}</li>
-                    <li>Manager: {{ event.manager }}</li>
-                    <li>Description: {{ event.description }}</li>
-                    <li>Attendees:<br/>
-                        {% for user in event.attendees.all%}
-                            {{ user }} <br/>
-                        {% empty %}
-                            <p>no attendees registered yet!</p>
-                        {% endfor %}
-                    </li>
-                </ul>
-                </p>
-            </div>
-            {% if user.is_authenticated %}
-                {% if user == event.manager %}
-                <div class="card-footer text-muted">
-                    <a href="{% url 'update_event' event.id %}" class="btn btn-outline-secondary btn-sm" >Update Event</a>
-                    <a href="{% url 'delete_event' event.id %}" class="btn btn-outline-danger btn-sm" >Delete Event</a>
+            {% if event.approved %}
+            <div class="card">
+                <div class="card-header">
+                    {{ event }}
                 </div>
+                <div class="card-body">
+                    <h5 class="card-title">Venue: {{ event.venue }}</h5>
+                    <p class="card-text">
+                    <ul>
+                        <li>Date: {{ event.event_date }}</li>
+                        <li>Days till event: {{ event.days_till }}</li>
+                        <li>Occured: {{ event.is_past }}</li>
+                        <li>Venue website: {{ event.venue.web }}</li>
+                        <li>Venue email: {{ event.venue.email_address }}</li>
+                        <li>Manager: {{ event.manager }}</li>
+                        <li>Description: {{ event.description }}</li>
+                        <li>Approved: {{ event.approved }}</li>
+                        <li>Attendees:<br/>
+                            {% for user in event.attendees.all%}
+                                {{ user }} <br/>
+                            {% empty %}
+                                <p>no attendees registered yet!</p>
+                            {% endfor %}
+                        </li>
+                    </ul>
+                    </p>
+                </div>
+                {% if user.is_authenticated %}
+                    {% if user == event.manager %}
+                    <div class="card-footer text-muted">
+                        <a href="{% url 'update_event' event.id %}" class="btn btn-outline-secondary btn-sm" >Update Event</a>
+                        <a href="{% url 'delete_event' event.id %}" class="btn btn-outline-danger btn-sm" >Delete Event</a>
+                    </div>
+                    {% endif %}
                 {% endif %}
+            </div><br/><br/>
             {% endif %}
-        </div><br/><br/>
         {% endfor %}
 
     </body>
